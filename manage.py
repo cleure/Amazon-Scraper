@@ -102,8 +102,17 @@ def action_prune(args):
     """ Delete hanging references to deleted objects. """
     global session
     
-    # TODO: Prune product groups
+    # Prune Product Groups
+    pgs = session.query(ProductGroup).all()
+    for pg in pgs:
+        test = session.query(Product)\
+                      .filter(Product.group_id == pg.id)\
+                      .first()
+        
+        if test is None:
+            session.delete(pg)
 
+    # Prune Product Price data
     pps = session.query(ProductPrice).all()
     for pp in pps:
         test = session.query(Product)\
