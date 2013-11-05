@@ -101,8 +101,9 @@ def action_list(args):
 def action_prune(args):
     """ Delete hanging references to deleted objects. """
     global session
+    
+    # TODO: Prune product groups
 
-    """
     pps = session.query(ProductPrice).all()
     for pp in pps:
         test = session.query(Product)\
@@ -113,14 +114,6 @@ def action_prune(args):
             session.delete(pp)
     
     session.commit()
-    """
-
-"""
-
-TODO:
-    - Rewrite tools to use ID instead of name, as that will no longer be unique
-
-"""
 
 def main():
     global session
