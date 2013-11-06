@@ -1,80 +1,104 @@
 #!/usr/bin/python
 
-import os, sys, datetime
-import products
+import os, sys, datetime, argparse
 
 from operator import itemgetter
 from app.db import *
 session = None
 
+def str_align(string, align, separator=' ', mode='prefix'):
+    out = str(string)
+    buf = ''
+    align = align - len(string)
+    
+    for i in range(align):
+        buf += str(separator)
+    
+    if mode == 'prefix':
+        return buf + out
+
+    return out + buf
+
 def price_int_to_str(price_int):
     a = price_int / 100
-    b = price_int - (a * 100)
-    return '%s.%s' % (a, b)
+    b = str(price_int - (a * 100))
+    
+    return '%d.%s' % (a, str_align(b, 2, '0'))
 
-def best_deals(products):
-    def sortfn(item):
-        return item[1] - item[2]
+def best_deals(products, number=10):
+    return sorted(products, key=itemgetter('price_diff'), reverse=True)[0:number]
 
-    return sorted(products, key=sortfn, reverse=False)
+def cheapest_deals(products, number=8):
+    return sorted(products, key=itemgetter('price_sale'))[0:number]
 
-def cheapest_deals(products):
-    return sorted(products, key=itemgetter(1))
-
-def print_products(title, products):
+def print_products(title, group, products, num=8):
     print('-'*80)
-    print(title)
+    print('%s in %s' % (title, group))
     print('-'*80)
-    for i in products:
-        print('$%s\t$%s\t- %s' % (i[3], i[4], i[0]))
+    
+    for p in products:
+        print('$%s$%s$%s- %s' % (
+            str_align(price_int_to_str(p['price_sale']), 8, mode='suffix'),
+            str_align(price_int_to_str(p['price_regular']), 8, mode='suffix'),
+            str_align('('+price_int_to_str(p['price_diff'])+')', 8, mode='suffix'),
+            p['title']
+        )
+    )
 
 def main():
     global session
     
-    """
+    functions = [
+        ('Cheapest Deals', cheapest_deals),
+        ('Best Deals', best_deals),
+    ]
     
-    TODO: Find products with prices trending up/down
-    TODO: List items by group
+    parser = argparse.ArgumentParser()
+    parser.add_argument(    '-n', '--number',
+                            help='Number of items per group to print',
+                            type=int,
+                            default=10)
     
-    """
+    args = parser.parse_args()
+    print_number = args.number
+    
+    if args.number is not None:
+        print_number = args.number
     
     manager = SessionManager('sqlite:///products.db')
     session = manager.session
-    
-    res = session.query(Product)\
-                      .order_by(Product.title)\
-                      .all()
-    
-    products = []
-    groups = {}
-    
-    for p in res:
-        if p.group_id not in groups:
-            pg = session.query(ProductGroup)\
-                        .filter(ProductGroup.id == p.group_id)\
+
+    groups = session.query(ProductGroup)\
+                    .order_by(ProductGroup.name)
+
+    for group in groups:
+        products = []
+        queryobj = session.query(Product)\
+                          .filter(Product.group_id == group.id)\
+                          .order_by(Product.title)
+
+        for pr in queryobj:
+            pp = session.query(ProductPrice)\
+                        .filter(ProductPrice.product_id == pr.id)\
+                        .order_by(ProductPrice.created.desc())\
                         .first()
-            groups[p.group_id] = pg
-        
-        pg = groups[p.group_id]
-        pp = session.query(ProductPrice)\
-                    .filter(ProductPrice.product_id == p.id)\
-                    .order_by(ProductPrice.created.desc())\
-                    .first()
-        
-        products.append((   p.title,
-                            pp.price_sale,
-                            pp.price_regular,
-                            price_int_to_str(pp.price_sale),
-                            price_int_to_str(pp.price_regular),
-                            pg.name))
-    
-    items = [
-        ('Cheapest Deals', cheapest_deals(products)),
-        ('Best Deals', best_deals(products)),
-    ]
-    
-    for title, plist in items:
-        print_products(title, plist)
+
+            item = {
+                'title': pr.title,
+                'price_sale': pp.price_sale,
+            }
+            
+            if pp.price_regular == 0:
+                item['price_diff'] = 0
+                item['price_regular'] = pp.price_sale
+            else:
+                item['price_diff'] = pp.price_regular - pp.price_sale
+                item['price_regular'] = pp.price_regular
+
+            products.append(item)
+
+        for title, fn in functions:
+            print_products(title, group.name, fn(products, args.number))
 
     sys.exit(0)
 
