@@ -37,7 +37,7 @@ def print_products(title, group, products, num=8):
     print('-'*80)
     
     for p in products:
-        print('$%s$%s%s- %s' % (
+        print('$%s$%s%s - %s' % (
             str_align(price_int_to_str(p['price_sale']), 8, mode='suffix'),
             str_align(price_int_to_str(p['price_regular']), 8, mode='suffix'),
             str_align('($'+price_int_to_str(p['price_diff'])+')', 8, mode='suffix'),
