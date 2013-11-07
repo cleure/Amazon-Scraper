@@ -45,19 +45,42 @@ def get_product_price(title, url):
 
     soup = BeautifulSoup(r.text)
 
+    # Get actual/sale price
     try:
         price_span = soup.find('span', id='actualPriceValue')
         price = str(price_span.contents[0].text)
     except Exception:
         price = None
 
+    # Get list/regular price
     try:
         price_value_span = soup.find('span', id='listPriceValue')
         price_value = str(price_value_span.contents[0])
     except Exception:
         price_value = None
 
-    return price, price_value
+    # Get number available
+    try:
+        form_node = soup.find('form', id='handleBuy')
+        buying_divs = form_node.findAll('div', attrs={'class': 'buying'})
+        for div in buying_divs:
+            avail_green = div.find('span', attrs={'class': 'availGreen'})
+            if avail_green is not None:
+                break
+
+        if avail_green is None:
+            available = None
+        else:
+            avail = str(avail_green.text).lower().strip()
+            if avail[0:4] == 'only':
+                parts = avail.split(' ')
+                available = int(parts[1])
+            else:
+                available = None
+    except Exception:
+        available = None
+
+    return price, price_value, available
 
 def price_to_int(price_text):
     if price_text[0] == '$':
@@ -79,7 +102,7 @@ def download_price_data():
         
         if ll is None or (ll.created - fetch_date) <= td:
             # Fetch new price data
-            price, price_regular = get_product_price(p.title, p.url)
+            price, price_regular, num_available = get_product_price(p.title, p.url)
             if price is None:
                 continue
         
@@ -91,7 +114,8 @@ def download_price_data():
             
             pp = ProductPrice(  product_id=p.id,
                                 price_sale=price_int,
-                                price_regular=price_regular_int)
+                                price_regular=price_regular_int,
+                                items_left=num_available)
         
             session.add(pp)
     session.commit()

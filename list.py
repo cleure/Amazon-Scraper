@@ -48,6 +48,12 @@ def print_products(title, group, products, num=8):
 def main():
     global session
     
+    """
+    
+    TODO: Overall best deals/etc
+    
+    """
+    
     functions = [
         ('Cheapest Deals', cheapest_deals),
         ('Best Deals', best_deals),
@@ -71,6 +77,7 @@ def main():
     groups = session.query(ProductGroup)\
                     .order_by(ProductGroup.name)
 
+    overall = {}
     for group in groups:
         products = []
         queryobj = session.query(Product)\
@@ -98,7 +105,8 @@ def main():
             products.append(item)
 
         for title, fn in functions:
-            print_products(title, group.name, fn(products, args.number))
+            _sorted = fn(products, args.number)
+            print_products(title, group.name, _sorted)
 
     sys.exit(0)
 

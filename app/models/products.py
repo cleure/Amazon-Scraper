@@ -32,6 +32,7 @@ class ProductPrice(Base):
     id = Column(Integer, primary_key=True)
     product_id = Column(Integer, ForeignKey('products.id'), index=True)
     price_sale = Column(Integer)
+    items_left = Column(Integer)
     price_regular = Column(Integer)
     created = Column(DateTime, default=created_modified_default, index=True)
     modified = Column(DateTime, default=created_modified_default,
