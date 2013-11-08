@@ -7,7 +7,7 @@ from sqlalchemy.sql import func
 
 from app.models.base import Base
 from app.models.products import *
-from app.models.config import *
+from app.models.rules import *
 
 class SessionManager(object):
     def __init__(self, path):

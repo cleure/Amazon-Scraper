@@ -2,7 +2,7 @@
 
 import os, sys, datetime
 import requests
-import products
+import products, config
 from bs4 import BeautifulSoup
 
 from app.db import *
@@ -89,9 +89,8 @@ def price_to_int(price_text):
     return int(price_parts[0]) * 100 + int(price_parts[1])
 
 def download_price_data():
-    now = datetime.datetime.now()
-    td = datetime.timedelta(hours=6)
-    fetch_date = now - td
+    now = datetime.datetime.utcnow()
+    td = datetime.timedelta(hours=config.scraper['run_every'])
     
     products = session.query(Product).all()
     for p in products:
@@ -100,7 +99,7 @@ def download_price_data():
                     .order_by(ProductPrice.created.desc())\
                     .first()
         
-        if ll is None or (ll.created - fetch_date) <= td:
+        if ll is None or (now - ll.created) >= td:
             # Fetch new price data
             price, price_regular, num_available = get_product_price(p.title, p.url)
             if price is None:

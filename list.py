@@ -41,7 +41,7 @@ def print_products(title, group, products, num=8):
             str_align(price_int_to_str(p['price_sale']), 8, mode='suffix'),
             str_align(price_int_to_str(p['price_regular']), 8, mode='suffix'),
             str_align('($'+price_int_to_str(p['price_diff'])+')', 8, mode='suffix'),
-            p['title']
+            p['print_title']
         )
     )
 
@@ -92,7 +92,9 @@ def main():
 
             item = {
                 'title': pr.title,
+                'print_title': pr.title,
                 'price_sale': pp.price_sale,
+                'group_name': group.name
             }
             
             if pp.price_regular == 0:
@@ -107,6 +109,18 @@ def main():
         for title, fn in functions:
             _sorted = fn(products, args.number)
             print_products(title, group.name, _sorted)
+            
+            if title not in overall:
+                overall[title] = _sorted[0:args.number]
+            else:
+                overall[title].extend(_sorted[0:args.number])
+
+    for title, fn in functions:
+        _sorted = fn(overall[title])[0:args.number]
+        for i in _sorted:
+            i['print_title'] = '%s (%s)' % (i['title'], i['group_name'])
+        
+        print_products(title, 'Overall', _sorted)
 
     sys.exit(0)
 
