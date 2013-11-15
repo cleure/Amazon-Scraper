@@ -48,12 +48,6 @@ def print_products(title, group, products, num=8):
 def main():
     global session
     
-    """
-    
-    TODO: Overall best deals/etc
-    
-    """
-    
     functions = [
         ('Cheapest Deals', cheapest_deals),
         ('Best Deals', best_deals),
@@ -97,7 +91,7 @@ def main():
                 'group_name': group.name
             }
             
-            if pp.price_regular == 0:
+            if pp.price_regular < pp.price_sale:
                 item['price_diff'] = 0
                 item['price_regular'] = pp.price_sale
             else:
@@ -111,10 +105,10 @@ def main():
             print_products(title, group.name, _sorted)
             
             if title not in overall:
-                overall[title] = _sorted[0:args.number]
+                overall[title] = _sorted
             else:
-                overall[title].extend(_sorted[0:args.number])
-
+                overall[title].extend(_sorted)
+    
     for title, fn in functions:
         _sorted = fn(overall[title])[0:args.number]
         for i in _sorted:

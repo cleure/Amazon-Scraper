@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os, sys, datetime
+import os, sys, datetime, multiprocessing, Queue
 import requests
 import products, config
 from bs4 import BeautifulSoup
@@ -39,9 +39,9 @@ def get_product_price(title, url):
         r = requests.get(url)
         if not r.status_code == 200:
             sys.stderr.write('Failed to download product page for: %s\n' % (title))
-            return None, None
+            return None, None, None
     except Exception:
-        return None, None
+        return None, None, None
 
     soup = BeautifulSoup(r.text)
 

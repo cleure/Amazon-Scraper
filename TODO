@@ -1,0 +1,7 @@
+
+- Worker model for scraper, using multiprocessing module.
+- Rework manage.py, should allow you to add notification rules.
+- Move savings to database (preprocessed)
+- Track shipping price (if available)... Coalesce into price_* fields.
+- Rework notification system:
+    - How do we handle formatting subject/message?
