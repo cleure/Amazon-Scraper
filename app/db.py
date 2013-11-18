@@ -15,3 +15,6 @@ class SessionManager(object):
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
         Base.metadata.create_all(self.engine)
+
+    def __del__(self):
+        self.session.close()
