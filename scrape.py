@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os, sys, datetime, multiprocessing, Queue
+import os, sys, datetime
 import requests
 import products, config
 from bs4 import BeautifulSoup

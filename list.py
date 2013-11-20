@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import os, sys, datetime, argparse
-
 from operator import itemgetter
 
 from app.pricefuncs import price_int_to_str, str_align
