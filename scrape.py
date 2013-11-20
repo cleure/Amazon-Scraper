@@ -5,6 +5,8 @@ import requests
 import products, config
 from bs4 import BeautifulSoup
 
+from app.pricefuncs import price_to_int
+
 from app.db import *
 session = None
 
@@ -81,12 +83,6 @@ def get_product_price(title, url):
         available = None
 
     return price, price_value, available
-
-def price_to_int(price_text):
-    if price_text[0] == '$':
-        price_text = price_text[1:]
-    price_parts = price_text.split('.')
-    return int(price_parts[0]) * 100 + int(price_parts[1])
 
 def download_price_data():
     now = datetime.datetime.utcnow()
