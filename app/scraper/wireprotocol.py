@@ -1,4 +1,4 @@
-import os, sys
+import os
 
 class WireProtocol(object):
     def __init__(self, r, w, chunksize=1024):

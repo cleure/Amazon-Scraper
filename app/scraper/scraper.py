@@ -107,7 +107,49 @@ class Scraper(object):
         except Exception:
             available = None
 
-        return price, price_value, available
+        # Shipping has a few different HTML layouts
+        shipping = None
+        for fn in [self.scrape_shipping1, self.scrape_shipping2]:
+            shipping = fn(soup)
+            if shipping is not None:
+                break
+
+        return price, price_value, available, shipping
+
+    def scrape_shipping1(self, soup):
+        try:
+            price_qty = soup.find('span', id='pricePlusShippingQty')
+            plus_shipping = price_qty.find('span', attrs={'class': 'plusShippingText'})
+            shipping = self._filter_shipping1(plus_shipping.text)
+        except Exception as e:
+            return None
+        
+        return shipping
+
+    def scrape_shipping2(self, soup):
+        try:
+            sold_by = soup.find('div', id='soldByThirdParty')
+            shipping_span = sold_by.find('span', attrs={'class': 'shipping3P'})
+            shipping = self._filter_shipping1(shipping_span.text)
+        except Exception as e:
+            return None
+
+        return shipping
+
+    @staticmethod
+    def _filter_shipping1(value):
+        chars = set(['$', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
+        filtered = ''
+        
+        for i in range(len(value)):
+            v = value[i]
+            if v in chars:
+                filtered += v
+
+        if len(filtered) == 0:
+            return None
+
+        return filtered
 
     def get_prices(self, wp, products):
         """ Download price data for specified products, and write output to
@@ -115,7 +157,7 @@ class Scraper(object):
     
         now = self.datetime_now()
         for p in products:
-            price, price_regular, items_left = (
+            price, price_regular, items_left, shipping = (
                 self.scrape_product_info(p['title'], p['url']))
             
             if price is None:
@@ -132,6 +174,7 @@ class Scraper(object):
                 price_int,
                 price_regular_int,
                 items_left,
+                shipping,
                 now,
                 now
             ]
@@ -152,6 +195,7 @@ class Scraper(object):
             'price_sale',
             'price_regular',
             'items_left',
+            'shipping',
             'created',
             'modified'
         ]

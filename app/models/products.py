@@ -20,6 +20,7 @@ class Product(Base):
     group_id = Column(Integer, ForeignKey('product_groups.id'), index=True)
     title = Column(String(64), nullable=False)
     url = Column(Text, nullable=False)
+    broken = Column(Integer, index=True, default=0)
 
     __table_args__ = (
         UniqueConstraint('title', 'group_id', name='products_title_group_id_uc'),
@@ -34,6 +35,7 @@ class ProductPrice(Base):
     price_sale = Column(Integer)
     items_left = Column(Integer)
     price_regular = Column(Integer)
+    shipping = Column(Integer)
     created = Column(DateTime, default=created_modified_default, index=True)
     modified = Column(DateTime, default=created_modified_default,
                       onupdate=created_modified_default,

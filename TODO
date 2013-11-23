@@ -1,6 +1,19 @@
 
+- Make main scraper use SQL Alchemy for consistency... Should be possible, even
+  with multiple processes.
+
+- Get rid of title parameter in Scraper.scrape_product_info(self, title, url).
+
+- Perform data processing in main scraper process, after data has been fetched.
+    - Automatically detect broken URLs.
+        - Iterate over all products.
+        - Check last successful fetch.
+        - If last successful fetch was over 3 days ago, set broken field to 1.
+        - Otherwise, set broken field to 0.
+    - Pre-calculate list data
+    - Run k-means on data, to track changes over time.
+    - Tie in for notifications system.
+
 - Rework manage.py, should allow you to add notification rules.
-- Move savings to database (preprocessed)?
-- Track shipping price (if available)... Coalesce into price_* fields.
 - Rework notification system:
     - How do we handle formatting subject/message?

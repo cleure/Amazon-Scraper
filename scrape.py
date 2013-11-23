@@ -6,6 +6,12 @@ import config
 from app.iterfuncs import chunks
 from app.scraper import WireProtocol, Scraper
 
+"""
+
+TODO: Rotate products, so they aren't all being scraped at the same time?
+
+"""
+
 def main():
     scraper = Scraper(
         db_path='./products.db',
@@ -35,6 +41,11 @@ def main():
     while not workers.empty():
         pid, wp = workers.get()
         scraper.save_prices(wp)
+        
+        try:
+            os.waitpid(pid, 0)
+        except OSError:
+            pass
 
     sys.stdout.flush()
     sys.stderr.flush()

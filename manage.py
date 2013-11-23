@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import os, sys, argparse, datetime
-import products
 from app.db import *
 
 session = None
@@ -92,11 +91,21 @@ def action_list(args):
     products = queryobj.all()
     last_group = None
     for p, g in products:
+        pp = session.query(ProductPrice)\
+                    .filter(ProductPrice.product_id == p.id)\
+                    .order_by(ProductPrice.created.desc())\
+                    .limit(1)\
+                    .first()
+        
         if not g.name == last_group:
             print('-'*80)
             last_group = g.name
-        
-        print('%s\t| %s | %s' % (p.id, g.name, p.title))
+
+        last_fetch = '       N/A'
+        if pp is not None:
+            last_fetch = pp.created.strftime('%Y-%m-%d')
+
+        print('%s\t| %s | %s | %s' % (p.id, last_fetch, g.name, p.title))
 
 def action_prune(args):
     """ Delete hanging references to deleted objects. """

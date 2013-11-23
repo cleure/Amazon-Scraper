@@ -1,6 +1,5 @@
 *.pyc
 .DS_Store
 *.db
-email-test.py
-scrape-old.py
+private/*
 Xcode
