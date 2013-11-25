@@ -164,17 +164,15 @@ class Scraper(object):
                 continue
         
             price_int = price_to_int(price)
-            if price_regular is None:
-                price_regular_int = 0
-            else:
-                price_regular_int = price_to_int(price_regular)
+            price_regular_int = price_to_int(price_regular)
+            shipping_int = price_to_int(shipping)
     
             values = [
                 p['id'],
                 price_int,
                 price_regular_int,
                 items_left,
-                shipping,
+                shipping_int,
                 now,
                 now
             ]

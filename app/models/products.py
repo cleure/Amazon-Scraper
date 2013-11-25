@@ -21,6 +21,12 @@ class Product(Base):
     title = Column(String(64), nullable=False)
     url = Column(Text, nullable=False)
     broken = Column(Integer, index=True, default=0)
+    
+    price_sale = Column(Integer)
+    price_regular = Column(Integer)
+    price_savings = Column(Integer)
+    sort_price = Column(Integer, index=True)
+    sort_savings = Column(Integer, index=True)
 
     __table_args__ = (
         UniqueConstraint('title', 'group_id', name='products_title_group_id_uc'),
