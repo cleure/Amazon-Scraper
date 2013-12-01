@@ -173,7 +173,6 @@ class Scraper(object):
                 price_regular_int,
                 items_left,
                 shipping_int,
-                now,
                 now
             ]
         
@@ -194,8 +193,7 @@ class Scraper(object):
             'price_regular',
             'items_left',
             'shipping',
-            'created',
-            'modified'
+            'created'
         ]
     
         query = 'INSERT INTO product_prices (%s) VALUES (%s)' % (

@@ -2,8 +2,12 @@ import os
 
 class WireProtocol(object):
     def __init__(self, r, w, chunksize=1024):
-        """ Parameters 'r' and 'w' should be pipe File Descriptors, capable of being
-            used by os.read() and os.write(). """
+        """ Simple CSV-like protocol for use with int and None types ONLY. Using
+            this with string/bytes or unicode types may result in buggy behavior.
+            
+            Parameters 'r' and 'w' should be File Descriptors, capable of being
+            used by os.read() and os.write(), for instance the ones returned by
+            os.pipe() or stdin/stdout. """
     
         self.r = r
         self.w = w

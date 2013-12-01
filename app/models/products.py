@@ -43,6 +43,17 @@ class ProductPrice(Base):
     price_regular = Column(Integer)
     shipping = Column(Integer)
     created = Column(DateTime, default=created_modified_default, index=True)
-    modified = Column(DateTime, default=created_modified_default,
-                      onupdate=created_modified_default,
-                      index=True)
+
+class ProductPriceHistory(Base):
+    __tablename__ = 'product_price_history'
+    
+    id = Column(Integer, primary_key=True)
+    product_id = Column(Integer, ForeignKey('products.id'), index=True)
+    price = Column(Integer)
+    date_range = Column(String(1), index=True)
+    date_of = Column(DateTime, index=True)
+    
+    @validates(date_range)
+    def validate_date_range(self, key, value):
+        assert value in set(['D', 'W', 'M'])
+        return value

@@ -1,4 +1,12 @@
 
+2013-11-26 15:30:01.294106
+2013-11-26 15:30:01.294106
+2013-11-26 15:30:01.294106
+2013-11-26 15:30:01.294106
+2013-11-26 15:30:01.294106
+
+- Drop modified column from product_prices, as it isn't needed.
+
 - List best/cheapest overall deals.
 
 - Make main scraper use SQL Alchemy for consistency... Should be possible, even
