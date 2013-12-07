@@ -55,6 +55,9 @@ def plot_days(product, width=640):
                  .limit(30).all()
 
     pps.reverse()
+    if len(pps) == 0:
+        return
+
     _min = pps[0].price
     _max = pps[0].price
     _min_pp = pps[0]

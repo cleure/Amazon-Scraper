@@ -34,10 +34,11 @@ class Scraper(object):
         product_keys = [i[0] for i in cursor.description]
     
         to_scrape = []
-    
         for res in results:
             p = dict(zip(product_keys, res))
-            cursor.execute('SELECT * FROM product_prices ORDER BY created DESC LIMIT 1')
+            cursor.execute(('SELECT * FROM product_prices WHERE product_id = ? '
+                            'ORDER BY created DESC LIMIT 1'), [p['id']])
+            
             pp_res = cursor.fetchone()
         
             if ALL:
@@ -184,6 +185,9 @@ class Scraper(object):
             them to the database. """
     
         items = wp.read_stream()
+        if len(items) == 0:
+            return
+        
         db = self.db_factory()
         cursor = db.cursor()
 

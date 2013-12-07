@@ -23,6 +23,9 @@ def main():
     workers = Queue.Queue()
     
     for i in range(n_workers):
+        if i >= n_groups:
+            break
+    
         wp = WireProtocol(*os.pipe())
         pid = os.fork()
     

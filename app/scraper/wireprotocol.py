@@ -12,12 +12,17 @@ class WireProtocol(object):
         self.r = r
         self.w = w
         self.chunksize = chunksize
+        self.written = False
 
     def write_tuple(self, item):
         os.write(self.w, '%s\n' % (','.join([str(i) for i in item])))
+        self.written = True
 
     def write_finished(self):
-        os.write(self.w, '\n')
+        if self.written:
+            os.write(self.w, '\n')
+        else:
+            os.write(self.w, '\n\n')
 
     def read_stream(self):
         items = []
