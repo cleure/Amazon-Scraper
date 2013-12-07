@@ -2,6 +2,7 @@
 scraper = {
     'run_every': 3,     # Run every X Hours
     'workers': 4,       # Number of scraper processes to spawn
+    'prune_days': -1,   # Prune price data older than X days. -1 to disable
 }
 
 notifications = {

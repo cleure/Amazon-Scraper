@@ -25,6 +25,8 @@ class Product(Base):
     price_sale = Column(Integer)
     price_regular = Column(Integer)
     price_savings = Column(Integer)
+    trending = Column(String, index=True)
+    trending_dist = Column(Integer)
     sort_price = Column(Integer, index=True)
     sort_savings = Column(Integer, index=True)
 
@@ -32,6 +34,10 @@ class Product(Base):
         UniqueConstraint('title', 'group_id', name='products_title_group_id_uc'),
         Index('products_title_group_id_idx', 'title', 'group_id'),
     )
+
+    @validates(trending)
+    def validate_trending(self, key, value):
+        assert value in set(['U', 'D', 'S'])
 
 class ProductPrice(Base):
     __tablename__ = 'product_prices'

@@ -15,6 +15,8 @@ def print_product(p):
     savings = 0
     if p.price_savings is not None:
         savings = int(p.price_savings)
+    else:
+        return
 
     print('$%s$%s%s - %s' % (
         str_align(price_int_to_str(p.price_sale), 8, mode='suffix'),
