@@ -26,18 +26,29 @@ def plot_days(product, width=640):
         c = int((price - _min) * y_scale)
         return int((abs(c - height) - 1) * hoff[0] + (height * hoff[1]))
 
-    path = os.path.join('private/days', str(product.id) + '.png')
+    # Automatically create paths if they dont exist
+    if not os.path.exists('private'):
+        os.mkdir('private')
     
+    if not os.path.exists('private/days'):
+        os.mkdir('private/days')
+
+    # Output path for image
+    path = os.path.join('private/days', str(product.id) + '.png')
+
+    # Product group (used in graph title)
     product_group = session.query(ProductGroup)\
                            .filter(ProductGroup.id == product.group_id)\
                            .first()
-    
+
+    # Most recent product_prices entry
     most_recent = session.query(ProductPrice)\
                          .filter(ProductPrice.product_id == product.id)\
                          .order_by(ProductPrice.created.desc())\
                          .limit(1)\
                          .first()
-    
+
+    # Data points for graph
     pps = session.query(ProductPriceHistory)\
                  .filter(ProductPriceHistory.product_id == product.id)\
                  .order_by(ProductPriceHistory.date_of.desc())\
