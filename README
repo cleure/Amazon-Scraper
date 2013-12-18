@@ -60,3 +60,7 @@ Once enough data has been collected, you can plot price changes over time by run
     ./plot-days.py
 
 This tool will output image files to private/days/ which you can then view.
+
+--------------------------------------------------------------------------------
+Notifications (coming soon)
+--------------------------------------------------------------------------------
