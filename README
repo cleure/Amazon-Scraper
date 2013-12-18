@@ -1,0 +1,59 @@
+
+================================================================================
+Amazon Price Scraper
+================================================================================
+
+A tool to scrape product prices, and (optionally) graph changes over time. Requirements:
+
+- Python 2.6 - 2.7 (Full Python 3 support coming soon)
+- SQLite3
+- SQL Alchemy
+- Requests
+- BeautifulSoup v4
+- PIL (optional, for plotting data to images)
+
+--------------------------------------------------------------------------------
+Adding/Managing Products to Scrape
+--------------------------------------------------------------------------------
+
+To add a product run:
+
+    ./manage.py add --title "Title" --group "Group" --url "URL"
+
+Example:
+
+    ./manage.py add --title "Monster Hunter 3 Ultimate" --group "3DS" --url "http://www.amazon.com/gp/product/B009B1D7JK"
+
+To list products currently being tracked:
+
+    ./manage.py list [--group "group" | --broken]
+
+--------------------------------------------------------------------------------
+Scraping Data
+--------------------------------------------------------------------------------
+
+Data scraping intervals are controlled in config.py in scraper['run_every']. To scrape data, run the command:
+
+    ./scrape.py
+
+The scraper process will fork workers to download price data. Once the price data has been downloaded and saved to the database, it will reindex history data (which is used by the plot-days.py command), reindex the main product index, prune deleted items, and clear out older data which is no longer being used.
+
+--------------------------------------------------------------------------------
+Listing Data
+--------------------------------------------------------------------------------
+
+To list price data, simply run:
+
+    ./list.py [-n NUMBER]
+
+Where "-n NUMBER" is the number of products you want to list for each product group.
+
+--------------------------------------------------------------------------------
+Plotting Changes Over Time
+--------------------------------------------------------------------------------
+
+Once enough data has been collected, you can plot price changes over time by running the command:
+
+    ./plot-days.py
+
+This tool will output image files to private/days/ which you can then view.

@@ -1,4 +1,8 @@
 
+- Search tool. When given a search term, it would output search results to the terminal window, and provide an easy way to get more details about specific products, and have the ability to add products to the watch list (without going through manage.py).
+
+- Don't plot items which don't have enough data yet.
+
 - List best/cheapest overall deals.
 
 - Make main scraper use SQL Alchemy for consistency... Should be possible, even
@@ -7,9 +11,6 @@
 - Rotate products, so they aren't all being scraped at the same time?
 
 - Get rid of title parameter in Scraper.scrape_product_info(self, title, url).
-
-- Perform data processing in main scraper process, after data has been fetched.
-    - Run k-means on data, to track changes over time.
 
 - Rework manage.py, should allow you to add notification rules.
 - Rework notification system:
