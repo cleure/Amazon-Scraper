@@ -88,6 +88,9 @@ def action_list(args):
     if args.group is not None:
         queryobj = queryobj.filter(ProductGroup.name == str(args.group))
 
+    if args.broken == True:
+        queryobj = queryobj.filter(Product.broken == 1)
+
     products = queryobj.all()
     last_group = None
     for p, g in products:
@@ -156,7 +159,7 @@ def main():
     parser.add_argument('--title', help='Title of Product')
     parser.add_argument('--group', help='Name of Group product should be in')
     parser.add_argument('--url', help='URL of Product')
-    #parser.add_argument('--broken', help='URL of Product')
+    parser.add_argument('--broken', action='store_true', help='URL of Product')
 
     args = parser.parse_args()
     fntable[args.action](args)
