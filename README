@@ -18,15 +18,18 @@ Adding/Managing Products to Scrape
 
 To add a product run:
 
-    ./manage.py add --title "Title" --group "Group" --url "URL"
+    ./manage.py add --title TITLE --group GROUP --url URL
 
 Example:
 
     ./manage.py add --title "Monster Hunter 3 Ultimate" --group "3DS" --url "http://www.amazon.com/gp/product/B009B1D7JK"
 
-To list products currently being tracked:
+Full list of commands for manage.py:
 
-    ./manage.py list [--group "group" | --broken]
+    list [--group GROUP] [--broken]
+    add --title TITLE --group GROUP --url URL
+    update --id ID [--title TITLE] [--group GROUP] [--url URL]
+    remove --id ID
 
 --------------------------------------------------------------------------------
 Scraping Data
