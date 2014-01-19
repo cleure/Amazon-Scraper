@@ -71,6 +71,9 @@ def plot_days(product, width=640):
             _max = pp.price
             _max_pp = pp
 
+    if _max - _min < 3:
+        _max = (_max + 1) * 2
+
     # Graph title
     graph_title_color = (255, 255, 255)
     graph_subtitle_color = graph_title_color
