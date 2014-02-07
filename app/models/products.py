@@ -4,9 +4,6 @@ from sqlalchemy import ForeignKey, Table, UniqueConstraint, Index
 from sqlalchemy.orm import relationship, backref, validates
 from base import *
 
-def created_modified_default():
-    return datetime.datetime.utcnow()
-
 class ProductGroup(Base):
     __tablename__ = 'product_groups'
 
