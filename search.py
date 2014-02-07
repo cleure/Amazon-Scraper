@@ -4,14 +4,20 @@ from bs4 import BeautifulSoup
 
 """
 
+TODO:
+    - Move search/scrape logic to a class
+    - Command line arguments
+    - Cache search results in database
+        - Have a process automatically cleanup stale results (older than a few hours)
+    - Ability to add product based on search result
+
+Scrape URL:
 http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=shin%20megami
 
 """
 
 class SearchDefault(object):
     def __init__(self):
-        # http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=shin%20megami
-        
         self.url_base = 'http://www.amazon.com/s/ref=nb_sb_noss_2'
 
     def download_search_page(self, keywords, page=1):
