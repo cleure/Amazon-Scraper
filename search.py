@@ -1,103 +1,89 @@
-import os, sys, datetime
+import os, sys, datetime, argparse
 import requests, re
 from bs4 import BeautifulSoup
+from app.db import *
+from app.searcher import *
+import config
 
 """
 
 TODO:
-    - Move search/scrape logic to a class
-    - Command line arguments
-    - Cache search results in database
-        - Have a process automatically cleanup stale results (older than a few hours)
+    - Show number of search results/pages
     - Ability to add product based on search result
-
-Scrape URL:
-http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=shin%20megami
+    - Search Terms needs its own table, to not break caching between departments.
 
 """
 
-class SearchDefault(object):
-    def __init__(self):
-        self.url_base = 'http://www.amazon.com/s/ref=nb_sb_noss_2'
+session = None
+product_searcher = None
 
-    def download_search_page(self, keywords, page=1):
-        url_params = {
-            'url': 'search-alias',
-            'field-keywords': keywords,
-            'page': page
-        }
+def action_search(args):
+    global session, product_searcher
+    
+    if args.keywords is None:
+        raise ArgumentError('Action search requires --keywords argument')
+    
+    if args.page is not None:
+        page = int(args.page)
+    else:
+        page = 1
+    
+    keywords = args.keywords
+    results = product_searcher.search(
+        keywords,
+        category=args.category,
+        page=page)
 
-        r = requests.get(self.url_base, params=url_params)
-        return r.text
+    columns = [
+        ('id', 'SEARCH RESULT ID'),
+        ('price_sale', 'Price (Sale)'),
+        ('price_regular', 'Price'),
+        ('category', 'Category'),
+        ('sub_category', 'Sub-Category'),
+        ('url', 'URL'),
+    ]
 
-    def parse_products(self, page):
-        pass
+    for r in results:
+        print('')
+        print(r.title.strip())
+        print('=' * 80)
+        for field, label in columns:
+            print('%s: %s' % (label, getattr(r, field)))
+
+def action_add(args):
+    global session, product_searcher
+
+def action_prune(args):
+    global session, product_searcher
+
+def main():
+    global session, product_searcher
+
+    fntable = {
+        'search': action_search,
+        'add': action_add,
+        'prune': action_prune
+    }
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument(    'action',
+                            help='Available Actions: search, add, prune',
+                            choices=['search', 'prune', 'add'])
+
+    parser.add_argument('--id', help='ID for Search Result to add')
+    parser.add_argument('--keywords', help='Keywords to search for')
+    parser.add_argument('--category', help='Category/Department to perform search in')
+    parser.add_argument('--page', help='Page of search results')
+    args = parser.parse_args()
+
+    manager = SessionManager('sqlite:///products.db')
+    session = manager.session
+    
+    product_searcher = ProductSearcher(session)
+    product_searcher.prune_cache(config.search['prune_cache'])
+    
+    fntable[args.action](args)
+    sys.exit(0)
 
 if __name__ == '__main__':
-    """
-    if not os.path.exists('search.html'):
-        r = requests.get('http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=shin%20megami')
-    
-        fp = open('search.html', 'w')
-        fp.write(r.text.encode('utf8'))
-        fp.close()
-    
-    fp = open('search.html', 'r')
-    content = fp.read()
-    fp.close()
-    """
-    
-    sd = SearchDefault()
-    content = sd.download_search_page('shin megami')
-    
-    soup = BeautifulSoup(content)
-    lists = soup.findAll('div', attrs={'class': 'listView'})
-    products = []
-
-    category_pattern = re.compile('[\W]$')
-    sub_category_pattern = re.compile('^(\s\-)')
-
-    for l in lists:
-        for p in l.findAll('div', attrs={'class': 'product'}):
-            product = {}
-            
-            title = p.find('div', attrs={'class': 'productTitle'})
-            if title is None:
-                continue
-        
-            try:
-                category = category_pattern.sub('', p.find('div', attrs={'class': 'store'}).find('span').text)
-            except Exception:
-                category = None
-        
-            try:
-                sub_category = sub_category_pattern.sub('', title.findAll('span', attrs={'class': 'binding'})[-1].text).strip()
-            except Exception:
-                sub_category = None
-            
-            try:
-                newSalePrice = p.find('div', attrs={'class': 'newPrice'}).find('span').text
-            except Exception:
-                newSalePrice = None
-            
-            try:
-                newRegPrice = p.find('div', attrs={'class': 'newPrice'}).find('strike').text
-            except Exception:
-                newRegPrice = None
-            
-            #pData = p.find('div', attrs={'class': 'productData'})
-            
-            product['title'] = title.a.text
-            product['url'] = title.a.get('href')
-            product['category'] = category
-            product['sub_category'] = sub_category
-            product['price_sale'] = newSalePrice
-            product['price_regular'] = newRegPrice
-
-            print(product)
-            #print(product)
-            #print(pData)
-
-    #print(results)
-    
-    sys.exit(0)
+    main()

@@ -20,3 +20,7 @@ notifications = {
         'certfile': None,
     }),
 }
+
+search = {
+    'prune_cache': 3    # Prune cache every X hours
+}
